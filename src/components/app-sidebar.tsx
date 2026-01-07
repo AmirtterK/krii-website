@@ -3,7 +3,6 @@
 import * as React from "react";
 import "@fontsource/orbitron";
 
-import { NavDocuments } from "@/src/components/nav-documents";
 import { NavMain } from "@/src/components/nav-main";
 import { NavSecondary } from "@/src/components/nav-secondary";
 import { NavUser } from "@/src/components/nav-user";
@@ -17,9 +16,24 @@ import {
   SidebarMenuItem,
 } from "@/src/components/ui/sidebar";
 import { data } from "@/src/data/sideBarLinks";
-import { IconCircleDottedLetterK, IconInnerShadowTop, IconLetterK } from "@tabler/icons-react";
+import {
+  IconCircleDottedLetterK,
+  IconInnerShadowTop,
+  IconLetterK,
+} from "@tabler/icons-react";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const [userRole, setUserRole] = React.useState<string>("user");
+
+  React.useEffect(() => {
+    // Get the real user data from localStorage
+    const userData = localStorage.getItem("user"); // Check what key you used
+    if (userData) {
+      const user = JSON.parse(userData);
+      setUserRole(user.role || "user");
+    }
+  }, []);
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -30,7 +44,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
               <a href="#">
-                {/* <span className="font-orbitron font-bold  text-base">K</span>{" "} */}
                 <IconLetterK className="w-32 h-32" strokeWidth={4} />
                 <span className="text-base font-semibold">Krii</span>
               </a>
@@ -39,9 +52,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={data.navMain} userRole={userRole} />
         {/* <NavDocuments items={data.documents} /> */}
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        {/* <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
       </SidebarContent>
       <SidebarFooter>
         <NavUser />

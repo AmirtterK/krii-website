@@ -68,7 +68,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           } else {
             // Invalid session, clear it
             console.log('❌ Invalid session, clearing...');
-            localStorage.removeItem('moderator');
+            localStorage.removeItem('moderator'); 
             setModerator(null);
           }
         } else {

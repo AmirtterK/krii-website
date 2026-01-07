@@ -24,6 +24,7 @@ export const data = {
     name: "shadcn",
     email: "m@example.com",
     avatar: "/avatars/shadcn.jpg",
+    role: "admin",
   },
   navMain: [
     {
@@ -60,6 +61,7 @@ export const data = {
       title: "Moderators",
       url: "/dashboard/moderators",
       icon: IconUsers,
+      adminOnly: true,
     },
   ],
   navClouds: [

@@ -12,20 +12,31 @@ import {
 
 export function NavMain({
   items,
+  userRole,
 }: {
   items: {
     title: string;
     url: string;
     icon?: Icon;
+    adminOnly?: boolean;
   }[];
+  userRole: string;
 }) {
   const pathname = usePathname();
+
+  // Filter items based on user role
+  const filteredItems = items.filter((item) => {
+    if (item.adminOnly) {
+      return userRole === "admin";
+    }
+    return true;
+  });
 
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">
         <SidebarMenu>
-          {items.map((item) => {
+          {filteredItems.map((item) => {
             const isActive = pathname === item.url;
             return (
               <SidebarMenuItem key={item.title}>
