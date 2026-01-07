@@ -14,7 +14,6 @@ import {
 } from "@/src/components/ui/card";
 import {
   Field,
-  FieldDescription,
   FieldGroup,
   FieldLabel,
 } from "@/src/components/ui/field";
@@ -24,63 +23,35 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false);
-  const [fullName, setFullName] = useState('');
   
-  const { signIn, signUp, signInWithGoogle } = useAuth();
+  const { signIn } = useAuth();
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('📝 Login form submitted');
+    console.log('👤 Username:', username);
+    console.log('🔑 Password length:', password.length);
+    
     setError('');
-    setSuccess('');
     setLoading(true);
 
     try {
-      if (isSignUp) {
-        await signUp(email, password, fullName);
-        setSuccess('Check your email to confirm your account!');
-        // Don't redirect yet - user needs to confirm email
-      } else {
-        await signIn(email, password);
-        router.push('/dashboard');
-      }
+      console.log('🔐 Calling signIn...');
+      await signIn(username, password);
+      
+      console.log('✅ Sign in successful, redirecting to dashboard...');
+      router.push('/dashboard');
     } catch (err: any) {
-      // Parse Supabase error messages
-      let errorMessage = 'An error occurred';
-      if (err.message.includes('Invalid login credentials')) {
-        errorMessage = 'Invalid email or password';
-      } else if (err.message.includes('Email not confirmed')) {
-        errorMessage = 'Please check your email to confirm your account';
-      } else if (err.message.includes('User already registered')) {
-        errorMessage = 'Email already registered';
-      } else if (err.message.includes('Password should be at least')) {
-        errorMessage = 'Password should be at least 6 characters';
-      } else if (err.message.includes('Unable to validate email')) {
-        errorMessage = 'Invalid email address';
-      } else {
-        errorMessage = err.message;
-      }
-      setError(errorMessage);
+      console.error('❌ Login form error:', err);
+      setError(err.message || 'Invalid username or password');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleGoogleSignIn = async () => {
-    setError('');
-    setLoading(true);
-
-    try {
-      await signInWithGoogle();
-    } catch (err: any) {
-      setError(err.message || 'Failed to sign in with Google');
-      setLoading(false);
+      console.log('✅ Login form submission complete');
     }
   };
 
@@ -88,11 +59,9 @@ export function LoginForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
-          <CardTitle>{isSignUp ? 'Create an account' : 'Login to your account'}</CardTitle>
+          <CardTitle>Admin Login</CardTitle>
           <CardDescription>
-            {isSignUp 
-              ? 'Enter your information to create an account' 
-              : 'Enter your email below to login to your account'}
+            Enter your credentials to access the admin dashboard
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -103,118 +72,37 @@ export function LoginForm({
                   {error}
                 </div>
               )}
-              
-              {success && (
-                <div className="bg-green-50 text-green-600 p-3 rounded-md text-sm">
-                  {success}
-                </div>
-              )}
-
-              {isSignUp && (
-                <Field>
-                  <FieldLabel htmlFor="name">Full Name</FieldLabel>
-                  <Input
-                    id="name"
-                    type="text"
-                    placeholder="John Doe"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                  />
-                </Field>
-              )}
 
               <Field>
-                <FieldLabel htmlFor="email">Email</FieldLabel>
+                <FieldLabel htmlFor="username">Username</FieldLabel>
                 <Input
-                  id="email"
-                  type="email"
-                  placeholder="m@example.com"
+                  id="username"
+                  type="text"
+                  placeholder="Enter your username"
                   required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  disabled={loading}
                 />
               </Field>
 
               <Field>
-                <div className="flex items-center">
-                  <FieldLabel htmlFor="password">Password</FieldLabel>
-                  {!isSignUp && (
-                    <a
-                      href="#"
-                      className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        // TODO: Implement password reset
-                        alert('Password reset - check your email!');
-                      }}
-                    >
-                      Forgot your password?
-                    </a>
-                  )}
-                </div>
+                <FieldLabel htmlFor="password">Password</FieldLabel>
                 <Input 
                   id="password" 
                   type="password" 
+                  placeholder="Enter your password"
                   required 
-                  minLength={6}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  disabled={loading}
                 />
-                {isSignUp && (
-                  <FieldDescription>
-                    Password must be at least 6 characters
-                  </FieldDescription>
-                )}
               </Field>
 
               <Field>
                 <Button type="submit" disabled={loading} className="w-full">
-                  {loading ? 'Loading...' : isSignUp ? 'Sign up' : 'Login'}
+                  {loading ? 'Signing in...' : 'Sign in'}
                 </Button>
-                <Button 
-                  variant="outline" 
-                  type="button" 
-                  className="w-full"
-                  onClick={handleGoogleSignIn}
-                  disabled={loading}
-                >
-                  Login with Google
-                </Button>
-                <FieldDescription className="text-center">
-                  {isSignUp ? (
-                    <>
-                      Already have an account?{' '}
-                      <a 
-                        href="#" 
-                        className="underline"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          setIsSignUp(false);
-                          setError('');
-                          setSuccess('');
-                        }}
-                      >
-                        Sign in
-                      </a>
-                    </>
-                  ) : (
-                    <>
-                      Don&apos;t have an account?{' '}
-                      <a 
-                        href="#" 
-                        className="underline"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          setIsSignUp(true);
-                          setError('');
-                          setSuccess('');
-                        }}
-                      >
-                        Sign up
-                      </a>
-                    </>
-                  )}
-                </FieldDescription>
               </Field>
             </FieldGroup>
           </form>

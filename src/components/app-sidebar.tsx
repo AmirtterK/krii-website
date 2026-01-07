@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import "@fontsource/orbitron";
 
 import { NavDocuments } from "@/src/components/nav-documents";
 import { NavMain } from "@/src/components/nav-main";
@@ -16,7 +17,7 @@ import {
   SidebarMenuItem,
 } from "@/src/components/ui/sidebar";
 import { data } from "@/src/data/sideBarLinks";
-import { IconInnerShadowTop } from "@tabler/icons-react";
+import { IconCircleDottedLetterK, IconInnerShadowTop, IconLetterK } from "@tabler/icons-react";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -29,8 +30,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
               <a href="#">
-                <IconInnerShadowTop className="!size-5" />
-                <span className="text-base font-semibold">Krii.</span>
+                {/* <span className="font-orbitron font-bold  text-base">K</span>{" "} */}
+                <IconLetterK className="w-32 h-32" strokeWidth={4} />
+                <span className="text-base font-semibold">Krii</span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -38,7 +40,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavDocuments items={data.documents} />
+        {/* <NavDocuments items={data.documents} /> */}
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
